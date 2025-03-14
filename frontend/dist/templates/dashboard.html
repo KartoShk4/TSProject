@@ -1,0 +1,61 @@
+<section class="dashboard">
+    <div class="content-header pb-5 pt-5">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <h1 class="m0">Главная</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row align-items-center pb-5">
+                <div class="col-auto">
+                    <div class="filters d-flex gap-4 align-items-center">
+                        <button class="btn border border-secondary text-secondary">Сегодня</button>
+                        <button class="btn border border-secondary text-secondary">Неделя</button>
+                        <button class="btn border border-secondary text-secondary">Месяц</button>
+                        <button class="btn border border-secondary text-secondary">Год</button>
+                        <button class="btn border border-secondary text-secondary">Все</button>
+                        <button class="btn border border-secondary text-secondary">Интервал</button>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="filters-interval">
+                        <label for="calendar-from"></label>
+                        <span class="pe-2">с</span><input id="calendar-from"
+                                                          class="input-calendar pe-2 link-secondary border-0"
+                                                          placeholder="Дата" readonly>
+                        <label for="calendar-to"></label>
+                        <span class="pe-2">по</span><input id="calendar-to"
+                                                           class="input-calendar pe-2 link-secondary border-0"
+                                                           placeholder="Дата" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="row pt-5">
+                <div class="col">
+                    <div class="schedule d-flex">
+                        <div class="schedule income d-flex flex-column pe-5">
+                            <div class="schedule-title fs-3 text-center pb-3">Доходы</div>
+                            <div class="chart">
+                                <canvas class="px-2 pt-2 pb-2" id="myChartIncome"></canvas>
+                            </div>
+                        </div>
+                        <div class="vr-schedule ms-5 me-5"></div>
+                        <div class="schedule expenses d-flex flex-column ps-5">
+                            <div class="schedule-title fs-3 text-center pb-3">Расходы</div>
+                            <div class="chart">
+                                <canvas class="px-2 pt-2 pb-2" id="myChartExpenses"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+

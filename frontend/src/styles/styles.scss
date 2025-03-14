@@ -1,0 +1,384 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+
+$color-blue: #052C65;
+$color-light-blue: #0D6EFD;
+$color-white: #FFFFFF;
+$color-gray: #6C757D;
+$color-light-gray: #DEE2E6;
+
+// MIXINS
+@mixin filter-btn-active {
+  background-color: $color-gray;
+  color: $color-white !important;
+}
+
+@mixin layout-btn-active {
+  background-color: $color-light-blue;
+  color: $color-white;
+}
+
+@mixin font-roboto-400 {
+  font-family: "Roboto", serif;
+  font-weight: 400 !important;
+  font-style: normal;
+}
+
+* {
+  font-family: "Roboto", serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+// AUTH
+.container-auth {
+  height: 100vh;
+
+  .form {
+    width: 397px;
+
+    .form-title {
+      color: $color-blue;
+    }
+
+    .remember-me {
+      @include font-roboto-400;
+    }
+
+    .password-control {
+      position: absolute;
+      top: 11px;
+      right: 6px;
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background: url(https://snipp.ru/demo/495/view.svg) 0 0 no-repeat;
+    }
+
+    .password-control.view {
+      background: url(https://snipp.ru/demo/495/no-view.svg) 0 0 no-repeat;
+    }
+
+    .account {
+      @include font-roboto-400;
+
+      .account-link {
+        @include font-roboto-400;
+        display: inline-block;
+      }
+
+      @media screen and (min-width: 320px) {
+        font-size: 14px;
+        text-align: center;
+      }
+    }
+  }
+}
+
+// LAYOUT
+.main-sidebar {
+  max-width: 219px;
+  height: 100vh;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  top: 0;
+  background-color: $color-white;
+
+  .nav {
+    .btn {
+      text-align: start;
+      border: 0;
+      font-size: 14px;
+      width: 178px;
+      padding: 9px 10px 8px 10px;
+      font-weight: 300;
+      color: $color-blue;
+
+      &:hover {
+        @include layout-btn-active;
+      }
+
+      &:focus {
+        @include layout-btn-active;
+      }
+
+      &.active {
+        @include layout-btn-active;
+      }
+
+      &:first-child {
+        &:active {
+          @include layout-btn-active;
+        }
+      }
+
+      .dropdown-toggle {
+        &::after {
+          content: none;
+        }
+      }
+
+      .fa-chevron-right {
+        transition: transform 0.3s;
+        transform-origin: center;
+      }
+
+      .rotate {
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .balance-link {
+    color: $color-blue !important;
+
+    .balance-item {
+      color: $color-light-blue;
+    }
+  }
+
+  .dropdown {
+    .dropdown-user {
+      &::after {
+        content: none;
+      }
+
+      .user-name-block {
+        width: 219px;
+        overflow: hidden;
+
+        .user-name {
+          color: $color-blue;
+        }
+      }
+    }
+
+
+    .dropdown-menu {
+      padding: 0;
+      margin-bottom: 15px;
+
+      .dropdown-item {
+        border-radius: 5px;
+
+        &:hover {
+          background-color: $color-light-blue;
+          border-radius: 5px;
+          color: $color-white;
+        }
+      }
+    }
+  }
+
+  .dropdown-user {
+    cursor: pointer;
+  }
+
+  .vr {
+    height: 100vh;
+    left: 219px;
+    position: absolute;
+    display: inline-block;
+    align-self: stretch;
+    width: var(--bs-border-width);
+    min-height: 1em;
+    background-color: currentcolor;
+    opacity: .25;
+  }
+}
+
+
+// MODAL
+.modal {
+  .modal-header {
+    border-bottom: none;
+    color: $color-blue;
+  }
+
+  .modal-footer {
+    border-top: none;
+  }
+
+  @media screen and (max-width: 425px) {
+    .modal-dialog-centered {
+      min-height: calc(65% - var(--bs-modal-margin) * 2);
+
+      .modal-content {
+        width: 68%;
+      }
+    }
+  }
+  @media screen and (max-width: 375px) {
+    .modal-dialog-centered {
+      min-height: calc(50% - var(--bs-modal-margin) * 2);
+
+      .modal-content {
+        width: 50%;
+      }
+    }
+  }
+}
+
+// DASHBOARD
+.content-wrapper {
+  margin-left: 219px;
+
+  .content-header {
+    padding-left: 60px;
+    color: $color-blue;
+  }
+
+  .content {
+    padding-left: 60px;
+    padding-right: 60px;
+
+    .filters {
+      .btn {
+        width: 100px;
+
+        &:hover {
+          @include filter-btn-active;
+        }
+
+        &:focus {
+          @include filter-btn-active;
+        }
+      }
+    }
+
+    .filters-interval {
+      .input-calendar {
+        width: 120px;
+        padding-left: 8px;
+      }
+
+      .input-calendar {
+        &:focus-visible {
+          outline: none;
+        }
+      }
+    }
+
+    .schedule {
+      .schedule-title {
+        color: $color-blue;
+      }
+
+      .vr-schedule {
+        height: 450px;
+        margin-top: 50px;
+        position: static;
+        width: var(--bs-border-width);
+        min-height: 1em;
+        background-color: currentcolor;
+        opacity: .25;
+      }
+
+      .chart {
+        height: 450px;
+        width: 450px;
+      }
+    }
+  }
+
+  .chart-message {
+    text-align: center;
+    font-size: 18px;
+    color: #666;
+    margin-top: 20px;
+
+    .info-text {
+      text-decoration: none;
+    }
+  }
+
+}
+
+// INCOME-AND-EXPENSES
+.content {
+  .title {
+    color: $color-blue;
+  }
+
+  .table-block {
+    .table {
+      .table-header {
+        border-top: 1px solid $color-light-gray;
+      }
+
+      .headline-number {
+        width: 150px;
+      }
+
+      .thead-color {
+        color: $color-blue;
+      }
+    }
+
+    .table-icon-cell {
+      width: 10px;
+      cursor: pointer;
+    }
+
+    .income-green {
+      color: green !important;
+    }
+
+    .expenses-red {
+      color: red !important;
+    }
+  }
+}
+
+// COMMON CATEGORIES (INCOME AND EXPENSES)
+.content {
+  .btn.disabled {
+    pointer-events: auto;
+    opacity: 1 !important;
+    background-color: $color-gray !important;
+    color: $color-white !important;
+    cursor: not-allowed !important;
+    border: none !important;
+  }
+}
+  .main {
+    .categories-title {
+      color: $color-blue;
+    }
+
+    .categories-item {
+      width: 352px;
+      height: 121px;
+    }
+
+    .category-title {
+      color: $color-blue;
+    }
+
+    .date-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: #aaa;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    input[type="date"]:focus + .date-placeholder,
+    input[type="date"]:not(:placeholder-shown) + .date-placeholder {
+      top: -20px;
+      left: 0;
+      font-size: 12px;
+      color: #333;
+    }
+  }
+
+  .active-btn {
+    background: $color-gray !important;
+    color: $color-white !important;
+  }
+
+
+
+
+

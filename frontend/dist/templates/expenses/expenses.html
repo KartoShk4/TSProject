@@ -1,0 +1,23 @@
+<div class="main">
+    <section class="categories ps-5 pt-5">
+        <div class="categories-title pb-4 pt-5">
+            <h1>Расходы</h1>
+        </div>
+        <div class="general d-flex flex-wrap gap-3" id="categories-container"></div>
+    </section>
+
+    <!-- Modal -->
+    <div class="modal fade" id="openModalIncomeDelete" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body px-4 pt-4 fs-6 text-center">
+                    Вы действительно хотите удалить категорию?<br> Связанные расходы будут удалены навсегда.
+                </div>
+                <div class="modal-footer d-flex justify-content-center" id="modalFooter">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Не удалять</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

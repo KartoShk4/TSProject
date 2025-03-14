@@ -1,0 +1,38 @@
+<div class="container container-auth d-flex justify-content-center align-items-center">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form text-center">
+                <img class="mb-5" src="/images/logo.png" alt="finance-logo">
+                <h1 class="form-title h3 mb-3 fs-1">Вход</h1>
+                <span id="common-error" class="error invalid-feedback text-center mb-3">Неверная почта или пароль</span>
+                <form novalidate>
+                    <div class="input-group pb-2">
+                        <div class="input-group-text"><span class="far fa-envelope-open fa-lg"></span></div>
+                        <label for="email"></label>
+                        <input type="email" class="form-control form-input border rounded-end-1" id="email" placeholder="Электронная почта">
+                            <span id="email-error" class="error invalid-feedback placeholder-wave">Введите корректный E-mail</span>
+                    </div>
+                    <div class="input-group pb-2 password">
+                        <div class="input-group-text" style="padding-right: 13px"><span class="fa-solid fa-lock fa-lg" style="padding-left: 1px"></span></div>
+                        <label for="password"></label>
+                        <input type="password" class="form-control form-input border rounded-end-1" id="password" name="password" placeholder="Пароль">
+                        <span id="password-error" class="error invalid-feedback">Заполните пароль</span>
+                    </div>
+                    <div class="active w-100">
+                        <div class="checkbox mb-3 mt-1 d-flex">
+                            <label>
+                                <input class="form-check-input me-2 float-start" type="checkbox" value="remember-me" id="remember-me"><span class="remember-me fs-6">Запомнить меня</span>
+                            </label>
+                        </div>
+                        <button type="button" class="btn btn-lg btn-primary mb-2 w-100" id="process-button">Войти</button>
+                        <p class="account">Еще нет аккаунта? <a href="/sign-up" class="account-link mx-2">Пройдите
+                            регистрацию</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,29 @@
+<div class="main">
+    <section class="categories ps-5 pt-5">
+        <div class="categories-title pb-4 pt-5">
+            <h1>Создание дохода/расхода</h1>
+        </div>
+        <div class="createInput d-flex flex-column gap-2 row">
+            <div class="col-xl-4 col-md-9">
+                <input type="text" class="form-control mb-2" aria-label="Small"
+                       aria-describedby="inputGroup-sizing-sm" id="name-input" readonly>
+                <select class="form-control mb-2" aria-label="Small" aria-describedby="inputGroup-sizing-sm" id="category-select">
+                    <option value="">Выберите категорию</option>
+                </select>
+                <input type="text" class="form-control mb-2" aria-label="Small" aria-describedby="inputGroup-sizing-sm"
+                       placeholder="Сумма в $..." id="sum-input">
+                <span id="sum-input-error" class="error invalid-feedback">Заполните поле</span>
+                <input type="date" class="form-control mb-2" aria-label="Small" aria-describedby="inputGroup-sizing-sm" id="date-input">
+<!--                <span id="date-input-error" class="error invalid-feedback">Выберите дату</span>-->
+                <input type="text" class="form-control mb-2" aria-label="Small" aria-describedby="inputGroup-sizing-sm"
+                       placeholder="Комментарий..." id="comments-input" maxlength="40">
+                <div class="createInputButton pt-3">
+                    <button type="button" class="btn btn-success me-2" id="button-create">Создать</button>
+                    <a href="/income-and-expenses" type="button" class="btn btn-danger">Отмена</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="create-income-and-expenses.js"></script>

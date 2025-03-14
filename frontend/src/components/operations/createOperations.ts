@@ -2,44 +2,56 @@ import {HttpUtils} from "../../utils/http-utils";
 import {AuthUtils} from "../../utils/auth-utils";
 
 export class CreateOperations {
-    constructor(openNewRoute) {
+    private readonly openNewRoute: (path: string) => void;
+    private readonly operationType: string | undefined;
+    private readonly sumInputElement: HTMLInputElement | null | undefined;
+    private readonly dateInputElement: HTMLInputElement | null | undefined;
+    private commentInputElement: HTMLInputElement | null | undefined;
+    private readonly categorySelectElement: HTMLSelectElement | null | undefined;
+
+    constructor(openNewRoute: (path: string) => void) {
         this.openNewRoute = openNewRoute;
 
         // Проверка авторизации пользователя
-        if (!AuthUtils.getAuthInfo(AuthUtils.accessTokenKey) || !AuthUtils.getAuthInfo(AuthUtils.refreshTokenKey)) {
-            return openNewRoute('/login');
+        if (
+            !AuthUtils.getAuthInfo(AuthUtils.accessTokenKey) ||
+            !AuthUtils.getAuthInfo(AuthUtils.refreshTokenKey)
+        ) {
+            openNewRoute('/login');
+            return;
         }
 
         // Извлечение параметра type из URL
         const urlParams = new URLSearchParams(window.location.search);
-        // В URL ожидается "Доход" или "Расход"
         this.operationType = urlParams.get("type") || "Неизвестный тип";
 
         // Установка значения типа операции в поле ввода (если такое есть)
-        const nameInput = document.getElementById("name-input");
+        const nameInput = document.getElementById("name-input") as HTMLInputElement | null;
         if (nameInput) {
             nameInput.value = this.operationType;
         }
 
         // Инициализация кнопки создания операции
-        const buttonCreate = document.getElementById('button-create');
+        const buttonCreate = document.getElementById('button-create') as HTMLButtonElement | null;
         if (buttonCreate) {
             buttonCreate.addEventListener('click', this.createOperations.bind(this));
         }
 
         // Инициализация элементов формы
-        this.sumInputElement = document.getElementById('sum-input');
-        this.dateInputElement = document.getElementById('date-input');
-        this.commentInputElement = document.getElementById('comments-input');
-        this.categorySelectElement = document.getElementById('category-select');
+        this.sumInputElement = document.getElementById('sum-input') as HTMLInputElement | null;
+        this.dateInputElement = document.getElementById('date-input') as HTMLInputElement | null;
+        this.commentInputElement = document.getElementById('comments-input') as HTMLInputElement | null;
+        this.categorySelectElement = document.getElementById('category-select') as HTMLSelectElement | null;
 
-        // Сохраняем выбранную категорию в localStorage
-        this.categorySelectElement.addEventListener('change', (event) => {
-            const selectedCategoryId = event.target.value;
-            console.log("Выбранная категория:", selectedCategoryId);
-            localStorage.setItem('selectedCategoryId', selectedCategoryId);
-        });
-
+        // Добавление обработчика на select для сохранения выбранной категории
+        if (this.categorySelectElement) {
+            this.categorySelectElement.addEventListener('change', (event: Event) => {
+                const target = event.target as HTMLSelectElement;
+                const selectedCategoryId = target.value;
+                console.log("Выбранная категория:", selectedCategoryId);
+                localStorage.setItem('selectedCategoryId', selectedCategoryId);
+            });
+        }
 
         // Загрузка категорий в зависимости от типа операции
         if (this.operationType === 'Доход') {
@@ -50,7 +62,7 @@ export class CreateOperations {
     }
 
     // Метод для загрузки категорий доходов
-    async getIncomeCategories() {
+    private async getIncomeCategories(): Promise<void> {
         const result = await HttpUtils.request('/categories/income');
 
         if (result.error) {
@@ -63,7 +75,7 @@ export class CreateOperations {
     }
 
     // Метод для загрузки категорий расходов
-    async getExpensesCategories() {
+    private async getExpensesCategories(): Promise<void> {
         const result = await HttpUtils.request('/categories/expense');
 
         if (result.error) {
@@ -76,18 +88,17 @@ export class CreateOperations {
     }
 
     // Метод для заполнения выпадающего списка категорий
-    populateCategories(categories) {
+    private populateCategories(categories: { id: number; title: string }[]): void {
         if (!this.categorySelectElement) return;
 
         this.categorySelectElement.innerHTML = ''; // Очищаем перед заполнением
 
         categories.forEach(category => {
             const option = document.createElement('option');
-            option.value = category.id;
+            option.value = category.id.toString();
             option.textContent = category.title;
-            this.categorySelectElement.appendChild(option);
+            this.categorySelectElement?.appendChild(option);
 
-            // Логируем добавленные категории
             console.log("Добавлена категория:", option.value, option.textContent);
         });
 
@@ -100,16 +111,16 @@ export class CreateOperations {
     }
 
     // Метод для валидации формы
-    validateForm() {
+    private validateForm(): boolean {
         let isValid = true;
         const requiredFields = [this.sumInputElement, this.dateInputElement, this.categorySelectElement];
 
         requiredFields.forEach(field => {
-            if (!field.value) {
+            if (field && !field.value) {
                 field.classList.add('is-invalid');
                 isValid = false;
             } else {
-                field.classList.remove('is-invalid');
+                field?.classList.remove('is-invalid');
             }
         });
 
@@ -117,14 +128,14 @@ export class CreateOperations {
     }
 
     // Метод для создания операции
-    async createOperations(e) {
+    private async createOperations(e: Event): Promise<void> {
         e.preventDefault();
 
-        if (this.validateForm()) {
+        if (this.validateForm() && this.sumInputElement && this.dateInputElement && this.categorySelectElement) {
             const amount = parseFloat(this.sumInputElement.value);
             const categoryId = parseInt(this.categorySelectElement.value, 10);
 
-            let typeToSend = '';
+            let typeToSend: string | undefined;
             if (this.operationType === 'Расход') {
                 typeToSend = 'expense';
             } else if (this.operationType === 'Доход') {
@@ -137,23 +148,26 @@ export class CreateOperations {
                 type: typeToSend,
                 amount: amount,
                 date: this.dateInputElement.value,
-                comment: this.commentInputElement.value,
+                comment: this.commentInputElement?.value || '',
                 category_id: categoryId,
             };
 
-            const result = await HttpUtils.request('/operations', 'POST', true, operationData);
+            try {
+                const result = await HttpUtils.request('/operations', 'POST', true, operationData);
 
-            if (result.error || !result.response) {
-                alert('Ошибка! Обратитесь в поддержку.');
-            } else {
-                document.dispatchEvent(new CustomEvent('operationCreated'));
-                this.openNewRoute('/operations');
+                if (result.error || !result.response) {
+                    alert('Ошибка! Обратитесь в поддержку.');
+                } else {
+                    document.dispatchEvent(new CustomEvent('operationCreated'));
+                    this.openNewRoute('/operations');
+                }
+
+                // Очистить localStorage после создания операции
+                localStorage.removeItem('selectedCategoryId');
+            } catch (error) {
+                console.error("Ошибка при создании операции:", error);
+                alert('Произошла ошибка. Попробуйте еще раз.');
             }
-
-            // Очистить localStorage после создания операции
-            localStorage.removeItem('selectedCategoryId');
         }
     }
-
 }
-

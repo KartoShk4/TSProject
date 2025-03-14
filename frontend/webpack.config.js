@@ -3,56 +3,58 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-    // Устанавливаем точку входа в приложение
-    entry: './src/app.js',
+    // Указал точку входа в приложение
+    entry: './src/app.ts',
     mode: 'development',
     output: {
-        // Генерируемый файл также называем app.js
         filename: 'app.js',
         path: path.resolve(__dirname, 'dist'),
-        clean: true, // Очищает папку dist перед новой сборкой
+        clean: true,
     },
-    // Плагин сервера для разработки
     devServer: {
         static: {
-            // Папка со статикой
             directory: path.join(__dirname, 'public'),
         },
         compress: true,
         port: 9000,
-        // Так как сервер не находит файл на "сервере", он переводит на страницу index.html, который в свою очередь загружает скрипт app.js
         historyApiFallback: true,
     },
-    // SCSS правила
     module: {
         rules: [
             {
-                test: /\.scss$/i, // SCSS обработка
+                // Добавили поддержку TS и TSX
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
+            {
+                test: /\.scss$/i,
                 use: ['style-loader', 'css-loader', 'sass-loader'],
             },
             {
-                test: /\.css$/i, // CSS обработка
+                test: /\.css$/i,
                 use: ['style-loader', 'css-loader'],
             },
             {
-                test: /\.(woff(2)?|eot|ttf|otf|svg)$/, // Шрифты и изображения
+                test: /\.(woff(2)?|eot|ttf|otf|svg)$/,
                 type: 'asset/resource',
             },
         ],
     },
+    resolve: {
+        // Добавили поддержку TS и TSX
+        extensions: ['.tsx', '.ts', '.js'],
+    },
     plugins: [
-        // Плагин, который копирует именно наш index.html
         new HtmlWebpackPlugin({
             template: './index.html'
         }),
-        // Плагин, который копирует файлы в dist
         new CopyPlugin({
             patterns: [
                 {from: "./src/templates", to: "templates"},
                 {from: "./src/static/images", to: "images"},
                 {from: "./node_modules/@fortawesome/fontawesome-free/webfonts", to: "webfonts"},
                 {from: "./node_modules/@fortawesome/fontawesome-free/css/all.min.css", to: "css"},
-                // {from: "./src/components/layout.js", to: "js"},
             ],
         }),
     ],

@@ -1,6 +1,6 @@
 import {HttpUtils} from "../../utils/http-utils";
 import {AuthUtils} from "../../utils/auth-utils";
-import {Layout} from '../layout.js';
+import {Layout} from '../layout.ts';
 import * as bootstrap from 'bootstrap';
 
 export class Operations {

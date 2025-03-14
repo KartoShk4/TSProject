@@ -11,16 +11,14 @@
                     <a href="/" class="btn"><i class="fa-solid fa-house px-2"></i>Главная</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/operations" class="btn">
-                        <i class="fa-solid fa-money-bill px-2"></i>
-                        Доходы & Расходы
-                    </a>
+                    <a href="/operations" class="btn"><i class="fa-solid fa-money-bill px-2"></i>Доходы & Расходы</a>
                 </li>
                 <li class="nav-item category">
                     <button class="btn btn-toggle d-inline-flex align-items-center border-0 justify-content-between"
                             data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false"
                             id="btn-action">Категории
-                        <i class="fa-solid fa-chevron-right ms-5" id="fa-chevron-right"></i></button>
+                        <i class="fa-solid fa-chevron-right ms-5" id="fa-chevron-right"></i>
+                    </button>
                     <div class="collapse" id="home-collapse">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1">
                             <li><a href="/income" class="btn btn-toggle d-inline-flex rounded">Доходы</a></li>
@@ -31,17 +29,17 @@
             </ul>
             <div class="balance ps-3">
                 <p>
-                    <button type="button" class="balance-link nav-link" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal" id="btn-balance">Баланс:
-                        <span class="balance-item ps-1" id="balance">0$</span></button>
+                    <button type="button" id="btn-balance" class="balance-link nav-link" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">Баланс:
+                        <span class="balance-item ps-1" id="balance">0$</span>
+                    </button>
                 </p>
             </div>
             <hr>
             <div class="dropdown ps-3 pb-4">
                 <a class="dropdown-user d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="/images/user.png" alt="avatar" width="32" height="32"
-                         class="rounded-circle me-2">
+                    <img src="/images/user.png" alt="avatar" width="32" height="32" class="rounded-circle me-2">
                     <div class="user-name-block">
                         <strong class="user-name ps-2 pe-2" id="user-name">USER</strong>
                     </div>

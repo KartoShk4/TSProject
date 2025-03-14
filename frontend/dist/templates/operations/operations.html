@@ -3,9 +3,9 @@
         <h1>Доходы и расходы</h1>
     </div>
     <div class="btn-actions pb-4">
-        <a href="/create-operations?type=Доход" class="btn btn-success me-2" id="btn-create-income">Создать
+        <a class="btn btn-success me-2" id="btn-create-income">Создать
             доход</a>
-        <a href="/create-operations?type=Расход" class="btn btn-danger" id="btn-create-expenses">Создать
+        <a class="btn btn-danger" id="btn-create-expenses">Создать
             расход</a>
     </div>
     <div class="row align-items-center pb-5">
@@ -22,9 +22,9 @@
         <div class="col-auto">
             <div class="filters-interval">
                 <label for="calendar-from"></label>
-                <span class="pe-2">с</span><input type="date" id="calendar-from" class="input-calendar pe-2 link-secondary border-0" placeholder="Дата">
+                <span class="pe-2">с</span><input type="text" id="calendar-from" class="input-calendar pe-2 link-secondary border-0" placeholder="Дата">
                 <label for="calendar-to"></label>
-                <span class="pe-2">по</span><input type="date" id="calendar-to" class="input-calendar pe-2 link-secondary border-0" placeholder="Дата">
+                <span class="pe-2">по</span><input type="text" id="calendar-to" class="input-calendar pe-2 link-secondary border-0" placeholder="Дата">
             </div>
         </div>
     </div>
@@ -49,8 +49,7 @@
 </section>
 
 <!-- Modal -->
-<div class="modal fade" id="openModalIncomeDelete" tabindex="-1" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
+<div class="modal fade" id="openModalOperationsDelete" tabindex="-1" aria-labelledby="exampleModalLabel">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body px-4 pt-4 fs-6 text-center">
@@ -66,7 +65,7 @@
 <!-- Toast -->
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
     <div id="liveToast" class="toast text-dark" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header bg-warning text-dark">
+        <div class="toast-header bg-primary text-white">
             <strong class="me-auto">
                 Внимание
             </strong>

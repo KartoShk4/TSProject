@@ -1,5 +1,13 @@
 import {HttpUtils} from "../utils/http-utils";
 
+interface UserInfo {
+    name: string;
+}
+
+interface BalanceResponse {
+    balance: number;
+}
+
 export class Layout {
     constructor() {
         // Устанавливаем имя пользователя на странице.

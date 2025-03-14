@@ -14,12 +14,27 @@ import {CreateCategoriesExpenses} from "./components/expenses/createCategoriesEx
 import {ExpensesDelete} from "./components/expenses/expensesDelete";
 import {Logout} from "./components/auth/logout";
 import {Layout} from "./components/layout";
+import * as events from "node:events";
+
+interface Route {
+    route: string;
+    // Указываем что свойство необязательное
+    title?: string;
+    filePathTemplate?: string;
+    // Указываем что свойство необязательное
+    useLayout?: string | false;
+    load?: () => void | Promise<void>
+    ;
+}
 
 export class Router {
-    constructor() {
+    private titlePageElement: HTMLElement | null;
+    private readonly contentPageElement: HTMLElement | null;
+    private routes: Route[];
 
-        this.titlePageElement = document.getElementById('title')
-        this.contentPageElement = document.getElementById('content')
+    constructor() {
+        this.titlePageElement = document.getElementById('title');
+        this.contentPageElement = document.getElementById('content');
 
         // Вызываем функцию, для удобства перенесли её из конструктора.
         this.initEvents();
@@ -164,7 +179,7 @@ export class Router {
         ];
     }
 
-    initEvents() {
+    private initEvents(): void {
         // Отлавливаем момент, когда пользователь загрузил страницу
         window.addEventListener('DOMContentLoaded', this.activateRoute.bind(this));
         // Вызываем функцию когда поменялся URL
@@ -173,7 +188,7 @@ export class Router {
         document.addEventListener('click', this.clickHandler.bind(this));
     }
 
-    async openNewRoute(url) {
+    private async openNewRoute(url: string | URL | null | undefined): Promise<void> {
         // Взяли старый URl
         const currentRoute = window.location.pathname;
         // В историю браузера вручную поменяли на новый URL
@@ -181,19 +196,20 @@ export class Router {
         await this.activateRoute(null, currentRoute);
     }
 
-    async clickHandler(e) {
+    async clickHandler(event: Event): Promise<void> {
+        const target = event.target as HTMLElement;
         // Проверка на ссылку
-        let element = null;
-        if (e.target.nodeName === 'A') {
-            element = e.target;
-        } else if (e.target.parentNode.nodeName === 'A') {
-            element = e.target.parentNode;
+        let element: HTMLAnchorElement | null = null;
+        if (target.nodeName === 'A') {
+            element = target as HTMLAnchorElement;
+        } else if (target.parentNode && target.parentNode instanceof HTMLAnchorElement) {
+            element = target.parentNode;
         }
 
         // Выполнили проверку на то что если ссылка является пустой или # или javascript:void(0), то мы её не обрабатываем.
         if (element) {
-            e.preventDefault();
-            const url = element.href.replace(window.location.origin, '');
+            event.preventDefault();
+            const url: string = element.href.replace(window.location.origin, '');
             if (!url || url === '/#' || url.startsWith('javascript:void(0)')) {
                 return;
             }
@@ -201,26 +217,26 @@ export class Router {
         }
     }
 
-    async activateRoute(e, oldRoute = null) {
+    private async activateRoute(event: Event | null, oldRoute: string| null = null): Promise<void> {
         // Получили адрес сайта после хоста
-        const urlRoute = window.location.pathname;
+        const urlRoute: string = window.location.pathname;
         // Определили на какой именно странице находится пользователь
-        const newRoute = this.routes.find(item => item.route === urlRoute);
+        const newRoute: Route | undefined = this.routes.find(item => item.route === urlRoute);
 
         if (newRoute) {
             // Проверяем, есть ли у страницы 'title'
-            if (newRoute.title) {
+            if (newRoute.title && this.titlePageElement) {
                 // Если есть, то присваиваем странице нужный title
                 this.titlePageElement.innerText = newRoute.title;
             }
 
             // Проверяем у newRoute есть pathTemplate
-            if (newRoute.filePathTemplate) {
-                let contentBlock = this.contentPageElement;
+            if (newRoute.filePathTemplate && this.contentPageElement) {
+                let contentBlock: HTMLElement | null = this.contentPageElement;
                 // Если в нашем новом роуте есть useLayout (шаблон layout)
                 if (newRoute.useLayout) {
                     // Если есть, то подставляем layout на страницу
-                    this.contentPageElement.innerHTML = await fetch(newRoute.useLayout).then(response => response.text());
+                    this.contentPageElement.innerHTML = await fetch(newRoute.useLayout).then((res: Response): Promise<string> => res.text());
                     // Нашли на странице layout нужный нам id, куда будет подставляться весь контент.
                     contentBlock = document.getElementById('contend-layout');
                     // Для Layout (пока не используется)
@@ -232,7 +248,8 @@ export class Router {
                     document.body.classList.remove('layout-fixed');
                 }
                 // Если pathTemplate есть, но нет useLayout, то подставляем контент на нужную страницу без layout.
-                contentBlock.innerHTML = await fetch(newRoute.filePathTemplate).then(response => response.text());
+                // @ts-ignore
+                contentBlock.innerHTML = await fetch(newRoute.filePathTemplate).then((res: Response): Promise<string> => res.text());
             }
 
             // Проверяем наличие cвойства load у newRoute, а так же проверяем что там имеется функция и файл не пустой.
@@ -244,7 +261,7 @@ export class Router {
             console.log('Такая страница не найдена');
             // Переводим пользователя на страницу авторизации в случае если страница не найдена
             history.pushState({}, '', '/login');
-            await this.activateRoute(e);
+            await this.activateRoute(event);
         }
     }
 }

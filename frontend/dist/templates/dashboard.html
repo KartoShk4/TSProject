@@ -13,24 +13,20 @@
             <div class="row align-items-center pb-5">
                 <div class="col-auto">
                     <div class="filters d-flex gap-4 align-items-center">
-                        <button class="btn border border-secondary text-secondary">Сегодня</button>
-                        <button class="btn border border-secondary text-secondary">Неделя</button>
-                        <button class="btn border border-secondary text-secondary">Месяц</button>
-                        <button class="btn border border-secondary text-secondary">Год</button>
-                        <button class="btn border border-secondary text-secondary">Все</button>
-                        <button class="btn border border-secondary text-secondary">Интервал</button>
+                        <button class="btn border border-secondary filter" id="today">Сегодня</button>
+                        <button class="btn border border-secondary filter" id="week">Неделя</button>
+                        <button class="btn border border-secondary filter" id="month">Месяц</button>
+                        <button class="btn border border-secondary filter" id="year">Год</button>
+                        <button class="btn border border-secondary filter" id="all">Все</button>
+                        <button class="btn border border-secondary filter" id="interval">Интервал</button>
                     </div>
                 </div>
                 <div class="col-auto">
                     <div class="filters-interval">
                         <label for="calendar-from"></label>
-                        <span class="pe-2">с</span><input id="calendar-from"
-                                                          class="input-calendar pe-2 link-secondary border-0"
-                                                          placeholder="Дата" readonly>
+                        <span class="pe-2">с</span><input type="text" id="calendar-from" class="input-calendar pe-2 link-secondary border-0" placeholder="Дата">
                         <label for="calendar-to"></label>
-                        <span class="pe-2">по</span><input id="calendar-to"
-                                                           class="input-calendar pe-2 link-secondary border-0"
-                                                           placeholder="Дата" readonly>
+                        <span class="pe-2">по</span><input type="text" id="calendar-to" class="input-calendar pe-2 link-secondary border-0" placeholder="Дата">
                     </div>
                 </div>
             </div>
@@ -39,6 +35,8 @@
                     <div class="schedule d-flex">
                         <div class="schedule income d-flex flex-column pe-5">
                             <div class="schedule-title fs-3 text-center pb-3">Доходы</div>
+                            <div id="no-income-message" class="chart-message" style="display: none;">Нет созданных доходов. Пожалуйста, создайте хотя бы одну операцию
+                                <a class="info-text" href="/operations">дохода</a></div>
                             <div class="chart">
                                 <canvas class="px-2 pt-2 pb-2" id="myChartIncome"></canvas>
                             </div>
@@ -46,6 +44,8 @@
                         <div class="vr-schedule ms-5 me-5"></div>
                         <div class="schedule expenses d-flex flex-column ps-5">
                             <div class="schedule-title fs-3 text-center pb-3">Расходы</div>
+                            <div id="no-expense-message" class="chart-message" style="display: none;">Нет созданных расходов. Пожалуйста, создайте хотя бы одну операцию
+                                <a class="info-text" href="/operations">расхода</a></div>
                             <div class="chart">
                                 <canvas class="px-2 pt-2 pb-2" id="myChartExpenses"></canvas>
                             </div>
@@ -55,7 +55,6 @@
             </div>
         </div>
     </div>
-
 </section>
 
 

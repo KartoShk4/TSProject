@@ -1,12 +1,25 @@
 import config from "../config/config";
 
+// Интерфейс для токенов
+interface Tokens {
+    accessToken: string;
+    refreshToken: string;
+}
+
+// Интерфейс для хранения информации о пользователе
+interface UserInfo {
+    // Пример поля (можно уточнить, исходя из структуры)
+    userId: string;
+    username: string;
+}
+
 export class AuthUtils {
     static accessTokenKey = 'accessToken';
     static refreshTokenKey = 'refreshToken';
     static userInfoTokenKey = 'userInfo';
 
     // Устанавливаем значения
-    static setAuthInfo(accessToken, refreshToken, userInfo = null) {
+    static setAuthInfo(accessToken: string, refreshToken: string, userInfo: UserInfo | null = null): void {
         localStorage.setItem(this.accessTokenKey, accessToken);
         localStorage.setItem(this.refreshTokenKey, refreshToken);
         if (userInfo) {
@@ -15,27 +28,27 @@ export class AuthUtils {
     }
 
     // Удаляем значения
-    static removeAuthInfo() {
+    static removeAuthInfo(): void {
         localStorage.removeItem(this.accessTokenKey);
         localStorage.removeItem(this.refreshTokenKey);
         localStorage.removeItem(this.userInfoTokenKey);
     }
 
     // Получаем значения
-    static getAuthInfo(key = null) {
+    static getAuthInfo(key: string | null = null): string | { [key: string]: string | null } {
         if (key && [this.accessTokenKey, this.refreshTokenKey, this.userInfoTokenKey].includes(key)) {
-            return localStorage.getItem(key);
+            return localStorage.getItem(key) || ''; // Возвращаем пустую строку, если значение не найдено
         } else {
             return {
                 [this.accessTokenKey]: localStorage.getItem(this.accessTokenKey),
                 [this.refreshTokenKey]: localStorage.getItem(this.refreshTokenKey),
                 [this.userInfoTokenKey]: localStorage.getItem(this.userInfoTokenKey),
-            }
+            };
         }
     }
 
     // Обновляем токен
-    static async updateRefreshToken() {
+    static async updateRefreshToken(): Promise<boolean> {
         let result = false;
         const refreshToken = this.getAuthInfo(this.refreshTokenKey);
         if (refreshToken) {
@@ -45,14 +58,14 @@ export class AuthUtils {
                     'Content-type': 'application/json',
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({refreshToken: refreshToken})
+                body: JSON.stringify({ refreshToken })
             });
 
             if (response && response.status === 200) {
                 const tokens = await response.json();
                 if (tokens && !tokens.error) {
                     this.setAuthInfo(tokens.tokens.accessToken, tokens.tokens.refreshToken);
-                    console.log(tokens.refreshToken);
+                    console.log(tokens.tokens.refreshToken);
                     result = true;
                 } else {
                     // Логирование ошибки в ответе
@@ -63,11 +76,12 @@ export class AuthUtils {
                 console.error('Failed to refresh token, status:', response.status);
             }
         }
-        // Если у нас есть в localStorage информация о токенах, удаляем информацию и отправляем на страницу /login
+
+        // Если обновление не удалось, удаляем информацию о токенах и перенаправляем на страницу авторизации
         if (!result) {
             this.removeAuthInfo();
         }
+
         return result;
     }
 }
-

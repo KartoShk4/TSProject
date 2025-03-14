@@ -19,7 +19,7 @@ export class AuthUtils {
     static userInfoTokenKey = 'userInfo';
 
     // Устанавливаем значения
-    static setAuthInfo(accessToken: string, refreshToken: string, userInfo: UserInfo | null = null): void {
+    static setAuthInfo(accessToken: string, refreshToken: string, userInfo?: UserInfo): void {
         localStorage.setItem(this.accessTokenKey, accessToken);
         localStorage.setItem(this.refreshTokenKey, refreshToken);
         if (userInfo) {

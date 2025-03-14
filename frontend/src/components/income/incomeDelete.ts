@@ -2,36 +2,45 @@ import {HttpUtils} from "../../utils/http-utils";
 import {AuthUtils} from "../../utils/auth-utils";
 
 export class IncomeDelete {
-    constructor(openNewRoute) {
+    private readonly openNewRoute: (path: string) => void;
+
+    constructor(openNewRoute: (path: string) => void) {
         this.openNewRoute = openNewRoute;
 
         // Выполняем проверку на наличии токена, если его нет
         if (!AuthUtils.getAuthInfo(AuthUtils.accessTokenKey) || !AuthUtils.getAuthInfo(AuthUtils.refreshTokenKey)) {
             // Переводим пользователя на главную страницу
-            return openNewRoute('/login');
+            openNewRoute('/login');
+            return;
         }
 
-        // Метод для извлечения ID из URL
+        // Извлекаем ID из URL
         const urlParams = new URLSearchParams(window.location.search);
+        const id: string | null = urlParams.get('id');
 
-        const id = urlParams.get('id');
         if (!id) {
-            return this.openNewRoute('/income');
+            this.openNewRoute('/income');
+            return;
         }
+
         this.incomeDelete(id).then();
     }
 
-    async incomeDelete(id) {
+    private async incomeDelete(id: string): Promise<void> {
         const result = await HttpUtils.request('/categories/income/' + id, 'DELETE', true);
+
         if (result.redirect) {
-            return this.openNewRoute(result.redirect);
+            this.openNewRoute(result.redirect);
+            return;
         }
+
         // Проверяем наличие ошибки и выводим сообщение
         if (result.error) {
             console.error('Ошибка при удалении категорий доходов:', result);
-            return alert('Возникла ошибка при удалении категорий доходов. Пожалуйста, обратитесь в поддержку!');
+            alert('Возникла ошибка при удалении категорий доходов. Пожалуйста, обратитесь в поддержку!');
+            return;
         }
 
-        return this.openNewRoute('/income');
+        this.openNewRoute('/income');
     }
 }

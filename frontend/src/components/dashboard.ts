@@ -1,23 +1,41 @@
 import {AuthUtils} from "../utils/auth-utils";
 import {HttpUtils} from "../utils/http-utils";
-import {createPopper} from "@popperjs/core";
-import {Chart, ArcElement, Tooltip, Legend, PieController} from 'chart.js';
+import {createPopper, Instance} from "@popperjs/core";
+import { Tooltip } from 'bootstrap';
+import {Chart, ArcElement, Legend, PieController, ChartTypeRegistry} from 'chart.js';
+
+type Operation = {
+    type: "income" | "expense";
+    category: string;
+    amount: number;
+}
 
 export class Dashboard {
-    constructor(openNewRoute) {
+    private readonly openNewRoute: (route: string) => void;
+    private periodBtns: NodeListOf<HTMLButtonElement> | undefined;
+    private operations: Operation[] | undefined;
+    private period: string = 'today';
+    private dateFromValue: string | null = null;
+    private dateToValue: string | null = null;
+    private mcIncome: HTMLCanvasElement | null | undefined;
+    private mcExpense: HTMLCanvasElement | null | undefined;
+    private chartIncome: Chart<keyof ChartTypeRegistry, number[], string> | null = null;
+    private chartExpense: Chart<keyof ChartTypeRegistry, number[], string> | null = null;
+
+    constructor(openNewRoute: (route: string) => void) {
         this.openNewRoute = openNewRoute;
 
         // Вынесли функцию вызова tooltip из конструктора
         this.tooltip();
 
         // Регистрация контроллеров и элементов диаграммы
-        Chart.register(PieController, ArcElement, Tooltip, Legend);
+        Chart.register(PieController, ArcElement, Legend);
 
         this.init();
         this.changeToDataText();
     }
 
-    async init() {
+    async init(): Promise<void> {
         // Проверка авторизации
         if (!AuthUtils.getAuthInfo(AuthUtils.accessTokenKey) || !AuthUtils.getAuthInfo(AuthUtils.refreshTokenKey)) {
             return this.openNewRoute('/login');
@@ -28,8 +46,8 @@ export class Dashboard {
         this.period = 'today';
         this.dateFromValue = null;
         this.dateToValue = null;
-        this.mcIncame = document.getElementById('myChartIncome');
-        this.mcExpense = document.getElementById('myChartExpenses');
+        this.mcIncome = document.getElementById('myChartIncome') as HTMLCanvasElement | null;
+        this.mcExpense = document.getElementById('myChartExpenses') as HTMLCanvasElement | null;
         this.chartIncome = null;
         this.chartExpense = null;
 
@@ -37,7 +55,7 @@ export class Dashboard {
         this.selectInterval();
     }
 
-    chartJS() {
+    chartJS(): void {
         // Уничтожаем предыдущие графики, если они есть
         if (this.chartIncome) this.chartIncome.destroy();
         if (this.chartExpense) this.chartExpense.destroy();
@@ -47,8 +65,8 @@ export class Dashboard {
         const noExpenseMessage = document.getElementById('no-expense-message');
 
         // Скрываем сообщения по умолчанию
-        noIncomeMessage.style.display = 'none';
-        noExpenseMessage.style.display = 'none';
+        if (noIncomeMessage) noIncomeMessage.style.display = 'none';
+        if (noExpenseMessage) noExpenseMessage.style.display = 'none';
 
         const colors = [
             'rgb(220, 53, 69)',
@@ -58,11 +76,11 @@ export class Dashboard {
             'rgb(13, 110, 253)',
         ];
 
-        let incomeData = [];
-        let expenseData = [];
+        let incomeData: number[] = [];
+        let expenseData: number[] = [];
 
-        const incomeOperations = this.operations.filter(itm => itm.type === 'income');
-        const expenseOperations = this.operations.filter(itm => itm.type === 'expense');
+        const incomeOperations = this.operations?.filter(itm => itm.type === 'income') || [];
+        const expenseOperations = this.operations?.filter(itm => itm.type === 'expense') || [];
         const incomeCategories = incomeOperations.map(itm => itm.category);
         const incomeLabels = Array.from(new Set(incomeCategories));
         const expenseCategories = expenseOperations.map(itm => itm.category);
@@ -89,7 +107,7 @@ export class Dashboard {
         });
 
         // Обработка доходов
-        if (incomeOperations && incomeOperations.length > 0) {
+        if (incomeOperations.length > 0 && this.mcIncome) {
             const dataIncome = {
                 labels: incomeLabels,
                 datasets: [{
@@ -99,7 +117,7 @@ export class Dashboard {
                     hoverOffset: 4,
                 }]
             };
-            this.chartIncome = new Chart(this.mcIncame, {
+            this.chartIncome = new Chart(this.mcIncome, {
                 type: 'pie',
                 data: dataIncome,
                 options: {
@@ -114,13 +132,13 @@ export class Dashboard {
                     }
                 }
             });
-        } else {
+        } else if (noIncomeMessage) {
             // Если доходов нет, показываем сообщение
             noIncomeMessage.style.display = 'block';
         }
 
         // Обработка расходов
-        if (expenseOperations && expenseOperations.length > 0) {
+        if (expenseOperations.length > 0 && this.mcExpense) {
             const dataExpense = {
                 labels: expenseLabels,
                 datasets: [{
@@ -145,33 +163,35 @@ export class Dashboard {
                     }
                 }
             });
-        } else {
+        } else if (noExpenseMessage) {
             // Если расходов нет, показываем сообщение
             noExpenseMessage.style.display = 'block';
         }
     }
 
-    changeToDataText() {
-        document.body.addEventListener('focusin', (event) => {
-            if (event.target.matches('#calendar-from, #calendar-to')) {
-                event.target.type = 'date';
+    changeToDataText(): void {
+        document.body.addEventListener('focusin', (event: Event) => {
+            const target = event.target as HTMLInputElement;
+            if (target.matches('#calendar-from, #calendar-to')) {
+                target.type = 'date';
             }
         });
 
-        document.body.addEventListener('blur', (event) => {
-            if (event.target.matches('#calendar-from, #calendar-to') && !event.target.value) {
+        document.body.addEventListener('blur', (event: Event) => {
+            const target = event.target as HTMLInputElement;
+            if (target.matches('#calendar-from, #calendar-to') && !target.value) {
                 setTimeout(() => {
-                    event.target.type = 'text';
-                    event.target.placeholder = 'Дата';
+                    target.type = 'text';
+                    target.placeholder = 'Дата';
                 }, 200);  // 200 мс, чтобы избежать мгновенного скрытия
             }
         }, true);
     }
 
     // Работа с tooltip bootstrap
-    tooltip() {
-        const button = document.querySelector('#button');
-        const tooltipElement = document.querySelector('#tooltip');
+    tooltip(): void {
+        const button = document.querySelector('#button') as HTMLButtonElement | null;
+        const tooltipElement = document.querySelector('#tooltip') as HTMLElement | null;
 
         if (button && tooltipElement) {
             // Инициализируем тултип Bootstrap
@@ -185,8 +205,8 @@ export class Dashboard {
         }
     }
 
-    initPopper(button, tooltipElement) {
-        const popperInstance = createPopper(button, tooltipElement, {
+    initPopper(button: HTMLButtonElement, tooltipElement: HTMLElement): void {
+        const popperInstance: Instance = createPopper(button, tooltipElement, {
             placement: 'top',
             modifiers: [
                 {
@@ -211,19 +231,23 @@ export class Dashboard {
     }
 
     // Управление фильтрами
-    selectInterval() {
+    selectInterval(): void {
+        if (!this.periodBtns) return;
+
         this.getOperations(this.period);
-        const activeToday = this.periodBtns[0]
+        const activeToday: HTMLButtonElement = this.periodBtns[0];
         activeToday.classList.add('active-btn');
         this.periodBtns.forEach(item => {
             item.addEventListener('click', () => {
-                this.periodBtns.forEach(itm => {
-                    itm.classList.remove('active-btn');
-                })
+                if (this.periodBtns) {
+                    this.periodBtns.forEach(itm => {
+                        itm.classList.remove('active-btn');
+                    });
+                }
                 item.classList.add('active-btn');
                 const intervalType = item.getAttribute('id');
-                this.dateFromInput = document.getElementById('calendar-from');
-                this.dateToInput = document.getElementById('calendar-to');
+                const dateFromInput = document.getElementById('calendar-from') as HTMLInputElement | null;
+                const dateToInput = document.getElementById('calendar-to') as HTMLInputElement | null;
                 switch (intervalType) {
                     case 'today':
                         this.getOperations('today');
@@ -245,29 +269,33 @@ export class Dashboard {
                             this.chartIncome.destroy();
                             this.chartExpense.destroy();
                         }
-                        this.dateFromInput.addEventListener('change', () => {
-                            this.dateFromValue = this.dateFromInput.value;
-                            this.getOperationsFromInterval()
-                        });
-                        this.dateToInput.addEventListener('change', () => {
-                            this.dateToValue = this.dateToInput.value;
-                            this.getOperationsFromInterval()
-                        });
-                        this.getOperationsFromInterval()
+                        if (dateFromInput) {
+                            dateFromInput.addEventListener('change', () => {
+                                this.dateFromValue = dateFromInput.value;
+                                this.getOperationsFromInterval();
+                            });
+                        }
+                        if (dateToInput) {
+                            dateToInput.addEventListener('change', () => {
+                                this.dateToValue = dateToInput.value;
+                                this.getOperationsFromInterval();
+                            });
+                        }
+                        this.getOperationsFromInterval();
                         break;
                 }
             });
         });
     }
 
-    getOperationsFromInterval() {
+    getOperationsFromInterval(): void {
         if (this.dateFromValue && this.dateToValue) {
             this.getOperations('interval', this.dateFromValue, this.dateToValue);
         }
     }
 
     // Запрос на интервал
-    async getOperations(period, dateFrom, dateTo) {
+    async getOperations(period: string, dateFrom?: string, dateTo?: string): Promise<void> {
         let params = `?period=${period}`;
         if (period === 'interval' && dateFrom && dateTo) {
             params += `&dateFrom=${dateFrom}&dateTo=${dateTo}`;
@@ -284,6 +312,7 @@ export class Dashboard {
             // ChartJS
             this.chartJS();
         } catch (e) {
+            console.error(e);
         }
     }
 }

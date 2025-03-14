@@ -20,7 +20,7 @@ export class Income {
         }
 
         // Получение контейнера категорий доходов
-        const container = document.getElementById('categories-container');
+        const container: HTMLElement | null = document.getElementById('categories-container');
         if (!container) {
             throw new Error("Не найден контейнер для категорий доходов (id='categories-container')");
         }
@@ -59,29 +59,29 @@ export class Income {
     // Отображение категорий
     private showRecords(records: Category[]): void {
         records.forEach(record => {
-            const categoryId = record.id;
-            const categoryTitle = record.title;
+            const categoryId: number = record.id;
+            const categoryTitle: string = record.title;
 
             // Создаем блок категории
-            const categoryBlock = document.createElement('div');
+            const categoryBlock: HTMLDivElement = document.createElement('div');
             categoryBlock.classList.add('categories-block');
 
-            const categoryItem = document.createElement('div');
+            const categoryItem: HTMLDivElement = document.createElement('div');
             categoryItem.classList.add('categories-item', 'border', 'rounded-4', 'd-flex', 'flex-column', 'px-3', 'pt-2');
 
             // Название категории
-            const categoryName = document.createElement('span');
+            const categoryName: HTMLSpanElement = document.createElement('span');
             categoryName.classList.add('fs-3', 'pb-2', 'category-title');
             categoryName.textContent = categoryTitle;
 
             // Кнопка "Редактировать"
-            const btnEdit = document.createElement('a');
+            const btnEdit: HTMLAnchorElement = document.createElement('a');
             btnEdit.href = `/edited-categories-income?id=${categoryId}&title=${encodeURIComponent(categoryTitle)}`;
             btnEdit.classList.add('btn', 'btn-primary', 'me-2');
             btnEdit.textContent = 'Редактировать';
 
             // Кнопка "Удалить"
-            const btnDelete = document.createElement('button');
+            const btnDelete: HTMLButtonElement = document.createElement('button');
             btnDelete.type = 'button';
             btnDelete.classList.add('btn', 'btn-danger');
             btnDelete.setAttribute('data-bs-toggle', 'modal');
@@ -89,21 +89,21 @@ export class Income {
             btnDelete.textContent = 'Удалить';
 
             // Обработчик клика на кнопку "Удалить"
-            btnDelete.addEventListener('click', () => {
-                const modalFooter = document.getElementById('modalFooter');
+            btnDelete.addEventListener('click', () : void => {
+                const modalFooter: HTMLElement | null = document.getElementById('modalFooter');
                 if (!modalFooter) return;
 
                 // Очищаем старое содержимое
                 modalFooter.innerHTML = '';
 
                 // Создаем ссылку для удаления
-                const deleteLink = document.createElement('a');
+                const deleteLink: HTMLAnchorElement = document.createElement('a');
                 deleteLink.href = `/income/delete?id=${categoryId}`;
                 deleteLink.classList.add('btn', 'btn-success');
                 deleteLink.textContent = 'Да, удалить';
 
                 // Кнопка "Не удалять"
-                const cancelButton = document.createElement('button');
+                const cancelButton: HTMLButtonElement = document.createElement('button');
                 cancelButton.type = 'button';
                 cancelButton.classList.add('btn', 'btn-danger');
                 cancelButton.setAttribute('data-bs-dismiss', 'modal');
@@ -114,7 +114,7 @@ export class Income {
             });
 
             // Добавляем кнопки в блок
-            const actionsDiv = document.createElement('div');
+            const actionsDiv:HTMLDivElement = document.createElement('div');
             actionsDiv.classList.add('actions', 'pb-4');
             actionsDiv.appendChild(btnEdit);
             actionsDiv.appendChild(btnDelete);
@@ -134,10 +134,10 @@ export class Income {
 
     // Добавление кнопки для создания новой категории
     private addCreateCategoryButton(): void {
-        const categoryBlockCreate = document.createElement('div');
+        const categoryBlockCreate: HTMLDivElement = document.createElement('div');
         categoryBlockCreate.classList.add('categories-block');
 
-        const categoryItemCreate = document.createElement('a');
+        const categoryItemCreate: HTMLAnchorElement = document.createElement('a');
         categoryItemCreate.classList.add(
             'categories-item',
             'border',
@@ -158,7 +158,7 @@ export class Income {
         this.categoriesContainer.appendChild(categoryBlockCreate);
 
         // Закрытие модального окна, если есть оверлей
-        const modalBackdrop = document.querySelector('.modal-backdrop');
+        const modalBackdrop: Element | null = document.querySelector('.modal-backdrop');
         if (modalBackdrop) {
             modalBackdrop.remove();
         }

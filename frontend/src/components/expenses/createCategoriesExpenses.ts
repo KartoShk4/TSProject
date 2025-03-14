@@ -1,48 +1,58 @@
-import {HttpUtils} from "../../utils/http-utils";
-import {AuthUtils} from "../../utils/auth-utils";
+import { HttpUtils } from "../../utils/http-utils";
+import { AuthUtils } from "../../utils/auth-utils";
 
 export class CreateCategoriesExpenses {
-    constructor(openNewRoute) {
+    private inputCreateCategories: HTMLInputElement | null | undefined;
+    private readonly buttonCreate: HTMLButtonElement | null | undefined;
+    private readonly openNewRoute: (route: string) => void;
+
+    constructor(openNewRoute: (route: string) => void) {
         this.openNewRoute = openNewRoute;
 
         // Выполняем проверку на наличии токена, если его нет
         if (!AuthUtils.getAuthInfo(AuthUtils.accessTokenKey) || !AuthUtils.getAuthInfo(AuthUtils.refreshTokenKey)) {
             // Переводим пользователя на главную страницу
-            return openNewRoute('/login');
+            openNewRoute('/login');
+            return;
         }
 
-        this.inputCreateCategories = document.getElementById('input-create-categories');
-        this.buttonCreate = document.getElementById('button-create');
+        // Инициализация элементов DOM
+        this.inputCreateCategories = document.getElementById('input-create-categories') as HTMLInputElement;
+        this.buttonCreate = document.getElementById('button-create') as HTMLButtonElement;
 
-        this.createCategoriesButton()
+        // Проверка на null перед добавлением обработчика события
+        if (this.buttonCreate) {
+            this.createCategoriesButton();
+        }
     }
 
-    createCategoriesButton() {
-        this.buttonCreate.addEventListener('click', () => {
+    // Метод для добавления обработчика событий на кнопку
+    private createCategoriesButton(): void {
+        this.buttonCreate?.addEventListener('click', () => {
             this.createCategories().then();
-        })
+        });
     }
 
-    // Создание функции для "Создания категории доходов"
-    async createCategories() {
-        // Выполнили проверку, не пустое ли поле input, если пустое, прекращаем выполнение кода.
-        const title = this.inputCreateCategories.value.trim();
+    // Создание категории расходов
+    private async createCategories(): Promise<void> {
+        // Проверка, не пустое ли поле input
+        const title: string | undefined = this.inputCreateCategories?.value.trim();
         if (!title) {
             alert('Название категории не может быть пустым.');
             return;
         }
+
+        // Отправляем запрос на создание категории
         const result = await HttpUtils.request('/categories/expense', 'POST', true, {
-            title: this.inputCreateCategories.value,
+            title: title,
         });
-
-
 
         // Если в ответе есть редирект, вызываем openNewRoute
         if (result.redirect) {
             return this.openNewRoute(result.redirect);
         }
 
-        // Проверяем наличие ошибки и выводим сообщение
+        // Проверяем наличие ошибки в ответе
         if (result.error) {
             console.error('Ошибка при создании категорий расходов:', result);
             alert('Возникла ошибка при создании категорий расходов. Пожалуйста, обратитесь в поддержку!');
@@ -58,6 +68,8 @@ export class CreateCategoriesExpenses {
 
         // Печатаем полученные данные
         console.log('Категории расходов:', result.response);
-        this.openNewRoute('/expenses')
+
+        // Перенаправляем на страницу с расходами
+        this.openNewRoute('/expenses');
     }
 }
